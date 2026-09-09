@@ -3,7 +3,9 @@ import socketserver
 import os
 import sys
 
-PORT = 8080
+class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    daemon_threads = True
+    allow_reuse_address = True
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     extensions_map = {
@@ -30,7 +32,7 @@ def run():
 
     for port in [8080, 8081, 8082, 3000, 5000]:
         try:
-            with socketserver.TCPServer(("", port), Handler) as httpd:
+            with ThreadingTCPServer(("", port), Handler) as httpd:
                 print(f"FORMANUPP Server running at http://localhost:{port}/")
                 sys.stdout.flush()
                 httpd.serve_forever()
